@@ -7,18 +7,21 @@ import "./index.css";
 import { store } from "./redux/Store";
 import { ToastContainer } from "react-toastify";
 import { Toaster } from "react-hot-toast";
+import { SearchProvider } from "./context/Context";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
-    <BrowserRouter>
-        <Provider store={store}>
-          <App />   
-          <Toaster/>  
-        </Provider>
-    </BrowserRouter>
+  <BrowserRouter>
+    <Provider store={store}>
+      <SearchProvider>
+        <App />
+      </SearchProvider>
+      <Toaster />
+    </Provider>
+  </BrowserRouter>
 
 
 
-  
+
 );

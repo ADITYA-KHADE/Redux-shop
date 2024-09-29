@@ -1,8 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Spinner from "../components/Spinner";
 import Product from "../components/Product";
+import { SearchContext } from "../context/Context";
 
 const Home = () => {
+  const { searchInput } = useContext(SearchContext);
+  const [products, setProducts] = useState([]);
   const API_URL = "https://dummyjson.com/products";
   const CATEGORY_URL = "https://dummyjson.com/products/categories";
   const [loading, setLoading] = useState(false);
@@ -16,9 +19,24 @@ const Home = () => {
   // Fetch categories
   const fetchCategories = async () => {
     try {
-      const res = await fetch(CATEGORY_URL);
+      const res = await fetch(
+        searchInput === "" ? CATEGORY_URL : `${API_URL}/search?q=${searchInput}`
+        // https://dummyjson.com/products/search?q=phone&select=category
+      );
       const data = await res.json();
-      setCategories(data); // Assuming data is an array of category strings
+      console.log(data)
+      if (searchInput === "") {
+        
+
+        const categories = data.map((product) => product.category);
+
+        const uniqueCategories = [...new Set(categories)];
+        console.log(uniqueCategories);
+
+        setCategories(uniqueCategories);
+      } else {
+        setCategories(data);
+      }
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
@@ -29,7 +47,9 @@ const Home = () => {
     setLoading(true);
     try {
       const res = await fetch(
-        `${API_URL}${selectedCategory ? `/category/${selectedCategory}` : ""}?limit=${limit}&skip=${offset}&select=price,title,images`
+        `${API_URL}${
+          selectedCategory ? `/category/${selectedCategory}` : ""
+        }?limit=${limit}&skip=${offset}&select=price,title,images`
       );
       const data = await res.json();
       setPosts(data.products);
@@ -66,6 +86,8 @@ const Home = () => {
     if (currentPage < totalPages) pages.push(currentPage + 1);
     return pages;
   };
+
+  console.log(categories);
 
   return (
     <div>

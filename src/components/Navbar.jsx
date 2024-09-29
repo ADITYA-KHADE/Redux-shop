@@ -1,6 +1,7 @@
 import {FaShoppingCart} from "react-icons/fa"
 import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
+import Input from "./Input"
 
 const Navbar = () => {
 
@@ -8,6 +9,7 @@ const Navbar = () => {
 
   return (
     <div >
+      <Input/>
       <nav className="flex justify-between items-center h-20 max-w-6xl mx-auto">
 
         <NavLink to="/">
