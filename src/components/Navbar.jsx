@@ -8,7 +8,6 @@ const Navbar = () => {
 
   return (
     <div>
-      <Input />
       <nav className="flex justify-between items-center h-20 max-w-6xl mx-auto">
         <NavLink to="/">
           <div className="ml-5">
@@ -17,6 +16,7 @@ const Navbar = () => {
         </NavLink>
 
         <div className="flex items-center font-medium text-slate-100 mr-5 space-x-6">
+          <Input />
           <NavLink to="/">
             <p>Home</p>
           </NavLink>

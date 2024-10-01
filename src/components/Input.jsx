@@ -56,7 +56,7 @@ const Input = () => {
 
   return (
     <div>
-      <div className="relative">
+      <div className="relative w-30 sm:w-40 md:w-50 lg:w-60 text-gray-800 ">
         <form onSubmit={updatefile}>
           <label htmlFor="Search" className="sr-only">
             Search
