@@ -4,10 +4,8 @@ import Product from "../components/Product";
 import { SearchContext } from "../context/Context";
 
 const Home = () => {
-  const { searchInput } = useContext(SearchContext);
-  const [products, setProducts] = useState([]);
+  const { files, cat } = useContext(SearchContext);
   const API_URL = "https://dummyjson.com/products";
-  const CATEGORY_URL = "https://dummyjson.com/products/categories";
   const [loading, setLoading] = useState(false);
   const [posts, setPosts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -16,44 +14,29 @@ const Home = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const limit = 10;
 
-  // Fetch categories
-  const fetchCategories = async () => {
-    try {
-      const res = await fetch(
-        searchInput === "" ? CATEGORY_URL : `${API_URL}/search?q=${searchInput}`
-        // https://dummyjson.com/products/search?q=phone&select=category
-      );
-      const data = await res.json();
-      console.log(data)
-      if (searchInput === "") {
-        
-
-        const categories = data.map((product) => product.category);
-
-        const uniqueCategories = [...new Set(categories)];
-        console.log(uniqueCategories);
-
-        setCategories(uniqueCategories);
-      } else {
-        setCategories(data);
-      }
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
+  const updatedpost = () => {
+    setPosts(files);
+    setCategories(cat);
+    setSelectedCategory("");
+    console.log(files);
+    console.log(cat);
   };
 
   const fetchPendingFiles = async (page, selectedCategory) => {
     const offset = (page - 1) * limit;
     setLoading(true);
     try {
-      const res = await fetch(
-        `${API_URL}${
-          selectedCategory ? `/category/${selectedCategory}` : ""
-        }?limit=${limit}&skip=${offset}&select=price,title,images`
-      );
-      const data = await res.json();
-      setPosts(data.products);
-      setTotalFiles(data.total);
+      if(selectedCategory){
+        const res = await fetch(
+          `${API_URL}/category/${selectedCategory}?limit=${limit}&skip=${offset}&select=price,title,images`
+        );
+        const data = await res.json();
+        setPosts(data.products);
+        setTotalFiles(data.total);
+      }else{
+        setPosts(files);
+        setTotalFiles(files.total);
+      }
     } catch (error) {
       console.error("Error fetching products:", error);
     } finally {
@@ -62,7 +45,12 @@ const Home = () => {
   };
 
   useEffect(() => {
-    fetchCategories();
+    if (files.length > 0) {
+      updatedpost();
+    }
+  }, [files, cat]);
+
+  useEffect(() => {
     fetchPendingFiles(currentPage, selectedCategory);
   }, [currentPage, selectedCategory]);
 
@@ -76,7 +64,7 @@ const Home = () => {
 
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
-    setCurrentPage(1); // Reset to the first page when category changes
+    setCurrentPage(1);
   };
 
   const getPageNumbers = () => {
@@ -87,21 +75,22 @@ const Home = () => {
     return pages;
   };
 
-  console.log(categories);
-
   return (
     <div>
-      {/* Category Dropdown */}
       <div className="my-4">
         <select
           onChange={(e) => handleCategoryChange(e.target.value)}
           value={selectedCategory}
           className="p-2 border rounded"
         >
-          <option value="">All Categories</option>
-          {categories.map((category) => (
-            <option key={category.slug} value={category.slug}>
-              {category.name}
+          <option
+            value=""
+          >
+            All Categories
+          </option>
+          {categories.map((category, index) => (
+            <option key={index} value={category}>
+              {category}
             </option>
           ))}
         </select>

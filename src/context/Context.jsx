@@ -1,15 +1,20 @@
 // src/context/SearchContext.js
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useMemo } from 'react';
 
 // Create a context
 const SearchContext = createContext();
 
-// Create a provider component
+
 const SearchProvider = ({ children }) => {
-  const [searchInput, setSearchInput] = useState("");
+  const [files, setFiles] = useState([]);
+  const [cat,setCat] = useState([]);
+
+
+  const value = useMemo(() => ({ files, setFiles,cat,setCat }), [files, setFiles,cat,setCat]);
+
 
   return (
-    <SearchContext.Provider value={{ searchInput, setSearchInput }}>
+    <SearchContext.Provider value={value}>
       {children}
     </SearchContext.Provider>
   );
