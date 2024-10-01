@@ -1,21 +1,29 @@
 import React, { useContext } from "react";
-import { SearchContext } from "../context/Context"; 
+import { SearchContext } from "../context/Context";
 
 const Input = () => {
   const { files, setFiles } = useContext(SearchContext);
   const { cat, setCat } = useContext(SearchContext);
   const [searchInput, setSearchInput] = React.useState("");
+  const [temp, setTemp] = React.useState([]);
+  const [tempc, setTempc] = React.useState([]);
 
   React.useEffect(() => {
     const fetchFiles = async () => {
       try {
-        const res = await fetch(`https://dummyjson.com/products?limit=10&skip=0&select=price,title,images`);
-        const res1= await fetch(`https://dummyjson.com/products/category-list`);
-        
+        const res = await fetch(
+          `https://dummyjson.com/products?limit=10&skip=0&select=price,title,images`
+        );
+        const res1 = await fetch(
+          `https://dummyjson.com/products/category-list`
+        );
+
         const data = await res.json();
         const data1 = await res1.json();
-       
+
         setCat(data1);
+        setTemp(data);
+        setTempc(data1);
         setFiles(data.products);
         console.log(data);
         console.log(data1);
@@ -31,25 +39,40 @@ const Input = () => {
     e.preventDefault();
     if (searchInput) {
       try {
-        const res = await fetch(
-          `https://dummyjson.com/products/search?q=${searchInput}&limit=10&skip=0&select=price,title,images`
-        );
-        const res1 = await fetch(
-          `https://dummyjson.com/products/search?q=${searchInput}`
-        );
+        if (searchInput === "") {
+          setFiles(temp.products);
+          setCat(tempc);
+        } else {
+          const res = await fetch(
+            `https://dummyjson.com/products/search?q=${searchInput}&limit=10&skip=0&select=price,title,images`
+          );
+          const res1 = await fetch(
+            `https://dummyjson.com/products/search?q=${searchInput}`
+          );
+          const data = await res.json();
+          const data1 = await res1.json();
+          const categoryList = data1.products.map(
+            (product) => product.category
+          );
+          const uniqueCategories = [...new Set(categoryList)];
+          setCat(uniqueCategories);
+          setFiles(data.products);
+        }
 
-        const data = await res.json();
-        const data1 = await res1.json();
-        const categoryList = data1.products.map((product) => product.category);
-        const uniqueCategories = [...new Set(categoryList)];
-        setCat(uniqueCategories);
-        console.log(data);
-        console.log(uniqueCategories)
-        setFiles(data.products);
+        // const data = await res.json();
+        // const data1 = await res1.json();
+        // const categoryList = data1.products.map((product) => product.category);
+        // const uniqueCategories = [...new Set(categoryList)];
+        // setCat(uniqueCategories);
+        // console.log(data);
+        // console.log(uniqueCategories);
+        // setFiles(data.products);
       } catch (error) {
         console.error("Error fetching search results:", error);
       }
     } else {
+      setFiles(temp.products);
+      setCat(tempc);
       console.log("Please enter search input");
     }
   };
